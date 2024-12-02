@@ -1,14 +1,14 @@
-﻿;@Ahk2Exe-SetMainIcon rhh.ico
+﻿;@Ahk2Exe-SetMainIcon icon.ico
 ;@Ahk2Exe-Set FileVersion, 1.3.0.0
 ;@Ahk2Exe-Set ProductVersion, 1.3.0.0
 ;@Ahk2Exe-PostExec "MPRESS.exe" "%A_WorkFileName%" -q -x, 0,, 1, 1
 
 #SingleInstance Force
 KeyHistory(0)
-If (!A_IsCompiled && FileExist("rhh.ico")) {
-  TraySetIcon("rhh.ico")
+If (!A_IsCompiled && FileExist("icon.ico")) {
+  TraySetIcon("icon.ico")
 }
-A_IconTip := "RDP Hotkey Helper"
+A_IconTip := "RDP Hotkey Pipe"
 Tray:= A_TrayMenu
 Tray.Delete()
 Tray.Add("Exit", Exit)
@@ -32,13 +32,19 @@ Media_Next::PassToLocalMachine()
 Media_Prev::PassToLocalMachine()
 Media_Stop::PassToLocalMachine()
 Media_Play_Pause::PassToLocalMachine()
+!Tab::PassToLocalMachine()
 
 PassToLocalMachine() {
+  If ((RdpHwnd == 0 || WinExist("A") != RdpHwnd) && A_ThisHotKey == "!Tab") {
+    SendInput "{Alt down}{Tab}"
+  }
   If (RdpHwnd == 0 || WinExist("A") != RdpHwnd) {
     Send("{" A_ThisHotKey "}")
     Return
   }
   WM_APPCOMMAND := 0x0319
+  WM_SYSCOMMAND := 0x0112
+  SC_MINIMIZE := 0xF020
   If (A_ThisHotKey = "Volume_Mute")
     PostMessage(WM_APPCOMMAND, 0, 8<<16, , "ahk_class Shell_TrayWnd") ; APPCOMMAND_VOLUME_MUTE
   Else If (A_ThisHotKey = "Volume_Down")
@@ -53,6 +59,8 @@ PassToLocalMachine() {
     PostMessage(WM_APPCOMMAND, 0, 13<<16, , "ahk_class Shell_TrayWnd") ; APPCOMMAND_MEDIA_STOP
   Else If (A_ThisHotKey = "Media_Play_Pause")
     PostMessage(WM_APPCOMMAND, 0, 14<<16, , "ahk_class Shell_TrayWnd") ; APPCOMMAND_MEDIA_PLAY_PAUSE
+  Else If (A_ThisHotKey = "!Tab")
+    PostMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0, , "A")  ; Send WM_SYSCOMMAND with SC_MINIMIZE to the active window
 }
 
 Exit(*) {
