@@ -1,2 +1,5 @@
 # rdp-hotkey-pipe
-Fork of [RDPHotkeyHelper](https://github.com/neon-dev/RDPHotkeyHelper) that "pipes" media keys to local machine and sets the Alt + Tab key combination to minimize the active RDP window.
+Fork of [RDPHotkeyHelper](https://github.com/neon-dev/RDPHotkeyHelper) that "pipes" hotkets from active RDP windows to the local Windows machine.
+-
+- Supports media key passthrough.
+- Sets Alt+Tab to minimize the active RDP window.
